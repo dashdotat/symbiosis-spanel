@@ -1,18 +1,27 @@
 <h2><%= @domain.name %></h2>
-<h3>Aliases</h3>
+<h3>Domain Aliases</h3>
 <ul>
 <% @domain.aliases.each do |a| %>
 	<li><%= a %></li>
 <% end %>
 </ul>
 <h3>Mailboxes</h3>
-<ul>
+<table class="table table-hover">
+<thead>
+	<tr>
+		<td></td>
+		<td></td>
+	</tr>
+</thead>
+<tbody>
 <% @domain.mailboxes.each do |m| %>
-	<li>
-		<%= m.local_part %>
-		| <a href="/domains/<%= @domain.name %>/mailboxes/<%= m.local_part %>/reset_password">Reset password</a></li>
+		<tr>
+			<td><a href="/domains/<%= @domain.name %>/mailboxes/<%= m.local_part %>"><%= m.local_part %></a></td>
+			<td><a href="/domains/<%= @domain.name %>/mailboxes/<%= m.local_part %>/reset_password">Reset password</a></td>
+		</tr>
 <% end %>
-</ul>
+</tbody>
+</table>
 <a href="/domains/<%= @domain.name %>/mailboxes/create">Create mailbox</a>
 <br/>
 <form action="/domains/<%= @domain.name %>" method="POST">

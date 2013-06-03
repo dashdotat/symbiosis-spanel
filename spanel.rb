@@ -1,53 +1,10 @@
 require 'rpam'
 require 'sinatra/base'
-require 'symbiosis'
-require 'symbiosis/domains'
-require 'symbiosis/domain/dns'
-require 'symbiosis/domain/mailbox'
-
+require './lib/spanel'
 include Rpam
 
 module Symbiosis
-	class Domain
-		def writable?
-			File.writable?(self.directory)
-		end
-
-		class Mailbox
-			def admin?
-				if self.exists?
-					param = get_param("admin", self.directory)
-				else
-					param = false
-				end
-				param
-			end
-
-			def admin=(value)
-				raise ArgumentError unless value.is_a?(TrueClass) || value.is_a?(FalseClass)
-				if self.exists?
-					set_param("admin", true, self.directory)
-				end
-			end
-		end
-	end
-
 	module SPanel
-		class Auth
-			def self.authenticate(username, password)
-				ret = nil
-				if /@/ =~ username
-					user = Symbiosis::Domains.find_mailbox(username)
-					if user.admin? && user.login(password)
-						ret = [user.local_part, user.domain.name]
-					end
-				else
-					ret = [username,"PAM"] if authpam(username, password)
-				end
-				ret
-			end
-		end
-
 		class App < Sinatra::Base
 			set :sessions, true
 			set :public_folder, File.dirname(__FILE__) + '/public'
@@ -55,8 +12,28 @@ module Symbiosis
 				redirect '/login' if session[:logged_in] != true && request.path_info != '/login'
 			end
 
+			helpers do
+				def check_domain_access(domain)
+					# if authenticated via PAM, we can access everything
+					if session[:user] && session[:user][1] == "PAM"
+						check_domain = get_domain(domain)
+					elsif session[:user] && session[:user][1].downcase == domain.downcase
+						check_domain = get_domain(domain)
+					else
+						redirect '/'
+					end
+					check_domain
+				end
+
+				def get_domain(domain)
+					val = Symbiosis::Domains.find(domain)
+					redirect '/' if val.nil?
+					val
+				end
+			end
+
 			get '/' do
-				@domains = Symbiosis::Domains.all
+				@domains = session[:user][1] == "PAM" ? Symbiosis::Domains.all : Symbiosis::Domain.new(session[:user][1]).to_a
 				erb :index
 			end
 
@@ -68,11 +45,16 @@ module Symbiosis
 				username = params[:username]
 				password = params[:password]
 				session[:logged_in] = nil
-				session[:username] = nil
-				if Symbiosis::SPanel::Auth.authenticate(username, password)
+				session[:user] = nil
+				auth = Symbiosis::SPanel::Auth.authenticate(username, password)
+				if auth and auth.is_a?(Array)
 					session[:logged_in] = true
-					session[:username] = username
-					redirect '/'
+					session[:user] = auth
+					if session[:user][1] == "PAM"
+						redirect '/'
+					else
+						redirect "/domains/#{session[:user][1]}"
+					end
 				else
 					erb :login
 				end
@@ -85,6 +67,7 @@ module Symbiosis
 			end
 
 			post '/domains/create' do
+				redirect '/' unless session[:user][1] == "PAM"
 				@domain = Symbiosis::Domain.new(params[:domain])
 				redirect "/domains/#{@domain.name}" if @domain.exists?
 				@domain.create
@@ -92,29 +75,24 @@ module Symbiosis
 			end
 
 			get '/domains/:domain' do
-				@domain = Symbiosis::Domains.find(params[:domain])
-				redirect '/' if @domain.nil?
+				@domain = check_domain_access(params[:domain])
 				erb :domain_main
 			end
 
 			post '/domains/:domain' do
-				@domain = Symbiosis::Domains.find(params[:domain])
-				redirect '/' if @domain.nil?
-				puts params.inspect
+				@domain = check_domain_access(params[:domain])
 				antispam = params[:antispam].nil? ? false : true
 				@domain.use_bytemark_antispam = antispam
 				redirect "/domains/#{@domain.name}"
 			end
 
 			get '/domains/:domain/mailboxes/create' do
-				@domain = Symbiosis::Domains.find(params[:domain])
-				redirect '/' if @domain.nil?
+				@domain = check_domain_access(params[:domain])
 				erb :mailbox_create
 			end
 
 			post '/domains/:domain/mailboxes/create' do
-				@domain = Symbiosis::Domains.find(params[:domain])
-				redirect '/' if @domain.nil?
+				@domain = check_domain_access(params[:domain])
 				@localpart = params[:localpart]
 				mailbox = Symbiosis::Domain::Mailbox.new(@localpart, @domain)
 				redirect "/domains/#{@domain.name}" if mailbox.exists?
@@ -122,17 +100,23 @@ module Symbiosis
 				redirect "/domains/#{@domain.name}"
 			end
 
+			get '/domains/:domain/mailboxes/:local_part' do
+				@domain = check_domain_access(params[:domain])
+			end
+
+			post '/domains/:domain/mailboxes/:local_part' do
+				@domain = check_domain_access(params[:domain])
+			end
+
 			get '/domains/:domain/mailboxes/:local_part/reset_password' do
-				@domain = Symbiosis::Domains.find(params[:domain])
-				redirect '/' if @domain.nil?
+				@domain = check_domain_access(params[:domain])
 				@mailbox = @domain.find_mailbox(params[:local_part])
 				redirect '/' unless @mailbox.exists?
 				erb :mailbox_reset
 			end
 
 			post '/domains/:domain/mailboxes/:local_part/reset_password' do
-				@domain = Symbiosis::Domains.find(params[:domain])
-				redirect '/' if @domain.nil?
+				@domain = check_domain_access(params[:domain])
 				@mailbox = @domain.find_mailbox(params[:local_part])
 				redirect '/' unless @mailbox.exists?
 				if params[:password] != params[:password_confirm]
