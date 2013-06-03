@@ -1,0 +1,21 @@
+<h2><%= @domain.name %></h2>
+<h3>Aliases</h3>
+<ul>
+<% @domain.aliases.each do |a| %>
+	<li><%= a %></li>
+<% end %>
+</ul>
+<h3>Mailboxes</h3>
+<ul>
+<% @domain.mailboxes.each do |m| %>
+	<li>
+		<%= m.local_part %>
+		| <a href="/domains/<%= @domain.name %>/mailboxes/<%= m.local_part %>/reset_password">Reset password</a></li>
+<% end %>
+</ul>
+<a href="/domains/<%= @domain.name %>/mailboxes/create">Create mailbox</a>
+<br/>
+<form action="/domains/<%= @domain.name %>" method="POST">
+<p>Use Bytemark anti-spam servers? <input type="checkbox" name="antispam" <%= "checked" if @domain.uses_bytemark_antispam? %> value="1"/></p>
+<input type="submit" name="submit" value="Update">
+</form>

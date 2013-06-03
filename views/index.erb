@@ -1,0 +1,7 @@
+<% @domains.each do |d| %>
+	<a href="/domains/<%= d.name %>"><%= d.name %></a><br />
+<% end %>
+<form action="/domains/create" method="POST">
+	<label for="domain">Domain:</label><input type="text" name="domain"/><br/>
+	<input type="submit" name="submit" value="Create domain"/>
+</form>

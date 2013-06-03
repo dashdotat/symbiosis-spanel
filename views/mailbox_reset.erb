@@ -1,0 +1,6 @@
+<form action="/domains/<%= @domain.name %>/mailboxes/<%= @mailbox.local_part %>/reset_password" method="POST">
+	<label for="password">Password</label><input type="password" name="password"/>
+	<br/>
+	<label for="password_confirm">Confirm password</label><input type="password" name="password_confirm"/>
+	<input type="submit" name="reset" value="Reset Password"/>
+</form>
