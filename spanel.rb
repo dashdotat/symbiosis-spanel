@@ -8,10 +8,43 @@ require 'symbiosis/domain/mailbox'
 include Rpam
 
 module Symbiosis
+	class Domain
+		def writable?
+			File.writable?(self.directory)
+		end
+
+		class Mailbox
+			def admin?
+				if self.exists?
+					param = get_param("admin", self.directory)
+				else
+					param = false
+				end
+				param
+			end
+
+			def admin=(value)
+				raise ArgumentError unless value.is_a?(TrueClass) || value.is_a?(FalseClass)
+				if self.exists?
+					set_param("admin", true, self.directory)
+				end
+			end
+		end
+	end
+
 	module SPanel
 		class Auth
 			def self.authenticate(username, password)
-				authpam(username, password)
+				ret = nil
+				if /@/ =~ username
+					user = Symbiosis::Domains.find_mailbox(username)
+					if user.admin? && user.login(password)
+						ret = [user.local_part, user.domain.name]
+					end
+				else
+					ret = [username,"PAM"] if authpam(username, password)
+				end
+				ret
 			end
 		end
 
