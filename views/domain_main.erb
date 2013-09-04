@@ -24,7 +24,9 @@
 </table>
 <a href="/domains/<%= @domain.name %>/mailboxes/create">Create mailbox</a>
 <br/>
-<form action="/domains/<%= @domain.name %>" method="POST">
-<p>Use Bytemark anti-spam servers? <input type="checkbox" name="antispam" <%= "checked" if @domain.uses_bytemark_antispam? %> value="1"/></p>
-<input type="submit" name="submit" value="Update">
-</form>
+<% if @domain.is_bytemark_content_dns? %>
+	<form action="/domains/<%= @domain.name %>" method="POST">
+	<p>Use Bytemark anti-spam servers? <input type="checkbox" name="antispam" <%= "checked" if @domain.uses_bytemark_antispam? %> value="1"/></p>
+	<input type="submit" name="submit" value="Update">
+	</form>
+<% end %>

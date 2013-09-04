@@ -8,8 +8,6 @@ module Symbiosis
 					if user && user.admin? && user.login(password)
 						ret = [user.local_part, user.domain.name]
 					end
-				else
-					ret = [username,"PAM"] if authpam(username, password)
 				end
 				ret
 			end

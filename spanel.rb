@@ -1,7 +1,5 @@
-require 'rpam'
 require 'sinatra/base'
 require './lib/spanel'
-include Rpam
 
 module Symbiosis
 	module SPanel
@@ -14,10 +12,7 @@ module Symbiosis
 
 			helpers do
 				def check_domain_access(domain)
-					# if authenticated via PAM, we can access everything
-					if session[:user] && session[:user][1] == "PAM"
-						check_domain = get_domain(domain)
-					elsif session[:user] && session[:user][1].downcase == domain.downcase
+					if session[:user] && session[:user][1].downcase == domain.downcase
 						check_domain = get_domain(domain)
 					else
 						redirect '/'
@@ -33,7 +28,7 @@ module Symbiosis
 			end
 
 			get '/' do
-				@domains = session[:user][1] == "PAM" ? Symbiosis::Domains.all : Symbiosis::Domain.new(session[:user][1]).to_a
+				@domains = Symbiosis::Domain.new(session[:user][1]).to_a
 				erb :index
 			end
 
@@ -50,11 +45,7 @@ module Symbiosis
 				if auth and auth.is_a?(Array)
 					session[:logged_in] = true
 					session[:user] = auth
-					if session[:user][1] == "PAM"
-						redirect '/'
-					else
-						redirect "/domains/#{session[:user][1]}"
-					end
+					redirect "/domains/#{session[:user][1]}"
 				else
 					erb :login
 				end
@@ -66,13 +57,13 @@ module Symbiosis
 				redirect '/login'
 			end
 
-			post '/domains/create' do
-				redirect '/' unless session[:user][1] == "PAM"
-				@domain = Symbiosis::Domain.new(params[:domain])
-				redirect "/domains/#{@domain.name}" if @domain.exists?
-				@domain.create
-				redirect "/domains/#{@domain.name}"
-			end
+#			post '/domains/create' do
+#				redirect '/' unless session[:user][1] == "PAM"
+#				@domain = Symbiosis::Domain.new(params[:domain])
+#				redirect "/domains/#{@domain.name}" if @domain.exists?
+#				@domain.create
+#				redirect "/domains/#{@domain.name}"
+#			end
 
 			get '/domains/:domain' do
 				@domain = check_domain_access(params[:domain])
@@ -81,7 +72,7 @@ module Symbiosis
 
 			post '/domains/:domain' do
 				@domain = check_domain_access(params[:domain])
-				antispam = params[:antispam].nil? ? false : true
+				antispam = params[:antispam].nil? || !@domain.is_bytemark_content_dns? ? false : true
 				@domain.use_bytemark_antispam = antispam
 				redirect "/domains/#{@domain.name}"
 			end
