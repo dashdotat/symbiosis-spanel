@@ -37,6 +37,7 @@ module Symbiosis
 			end
 
 			post '/login' do
+				puts request.inspect
 				username = params[:username]
 				password = params[:password]
 				session[:logged_in] = nil

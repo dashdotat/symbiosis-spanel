@@ -14,5 +14,19 @@ module Symbiosis
 				end
 			end
 		end
+
+		def mailbox_aliases
+			aliases = get_param("aliases", self.directory + '/config')
+			aliases_return = {}
+			if aliases
+				aliases = aliases.split("\n")
+				aliases.each do |a|
+					s = a.split(" ",2)
+					aliases_return[s[0]] = []
+					s[1].split(",").map { |v| aliases_return[s[0]] << v.gsub(" ","") }
+				end
+			end
+			aliases_return
+		end
 	end
 end

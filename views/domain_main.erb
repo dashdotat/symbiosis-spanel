@@ -24,6 +24,23 @@
 </table>
 <a href="/domains/<%= @domain.name %>/mailboxes/create">Create mailbox</a>
 <br/>
+<h3>E-Mail Aliases</h3>
+<table class="table table-hover">
+<thead>
+	<tr>
+		<td><strong>alias</strong>@<%= @domain.name %></td>
+		<td>Delivers to</td>
+	</tr>
+</thead>
+<tbody>
+	<% @domain.mailbox_aliases.each do |k,v| %>
+		<tr>
+			<td><%= k %></td>
+			<td><%= v.join(", ") %></td>
+		</tr>
+	<% end %>
+</tbody>
+</table>
 <% if @domain.is_bytemark_content_dns? %>
 	<form action="/domains/<%= @domain.name %>" method="POST">
 	<p>Use Bytemark anti-spam servers? <input type="checkbox" name="antispam" <%= "checked" if @domain.uses_bytemark_antispam? %> value="1"/></p>
