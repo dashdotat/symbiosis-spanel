@@ -90,6 +90,7 @@ module Symbiosis
 				@localpart = params[:localpart]
 				mailbox = Symbiosis::Domain::Mailbox.new(@localpart, @domain)
 				redirect "/domains/#{@domain.name}" if mailbox.exists?
+				mailbox.password = params[:password]
 				mailbox.create
 				redirect "/domains/#{@domain.name}"
 			end
