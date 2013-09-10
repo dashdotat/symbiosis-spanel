@@ -11,7 +11,7 @@
 				<p>This section lists hostnames which will serve the same content when visited as if you visited <%= @domain.name %></p>
 				<p>Additionally, aliases with a * following them will share mailboxes with <%= @domain.name %> so e-mail sent to <strong>name</strong>@alias will appear in the mailbox of <strong>name</strong>@<%= @domain.name %> (assuming <strong>name</strong> is a valid mailbox or alias defined below)</p>
 			</div>
-			<div class="hide-for-large small-12 columns">
+			<div class="hide-for-medium-up small-12 columns">
 				<p><small>Aliases marked with a * will also deliver mail to the mailbox/alias with the same name at <%= @domain.name %></small></p>
 			</div>
 		</div>
