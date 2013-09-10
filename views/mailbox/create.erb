@@ -1,7 +1,23 @@
 <form action="/domains/<%= @domain.name %>/mailboxes/create" method="POST">
-	<label for="localpart">Mailbox:</label>
-	<input type="text" name="localpart"/>@<%= @domain.name %><br/>
-	<label for="password">Password:</label>
-	<input type="password" name="password"/><br/>
-	<input type="submit" name="submit" value="create"/>
+	<fieldset>
+		<legend>Create Mailbox</legend>
+		<div class="row">
+			<div class="large-6 columns">
+				<div class="row collapse">
+					<div class="small-4 columns">
+						<input type="text" name="localpart" placeholder="Mailbox">
+					</div>
+					<div class="small-8 columns">
+						<span class="postfix">@<%= @domain.name %></span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-6 columns">
+				<input type="password" name="password" placeholder="Password">
+			</div>
+		</div>
+		<button>Create</button>
+	</fieldset>
 </form>

@@ -1,64 +1,81 @@
 <!DOCTYPE html>
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
 	<meta charset="utf-8">
 	<title>SPanel - Symbiosis Panel</title>
 	<meta name="viewport" content="width=device-width, intial-scale=1.0">
-	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/normalize.css" rel="stylesheet">
+	<link href="/css/foundation.min.css" rel="stylesheet">
 	<style type="text/css">
 		html,
 		body {
-			height: 100%;
 			background-color: #f5f5f5;
 			/* The html and body elements cannot have any padding or margin. */
 		}
-
-		/* Wrapper for page content to push down footer */
-		#wrap {
-			min-height: 100%;
-			height: auto !important;
-			height: 100%;
-			/* Negative indent footer by it's height */
-			margin: 0 auto -60px;
-		}
-
-		/* Set the fixed height of the footer here */
-		#push,
-		#footer {
-			height: 60px;
-		}
-
-		#footer {
-			background-color: #f5f5f5;
-		}
-
-		/* Lastly, apply responsive CSS fixes as necessary */
-		@media (max-width: 767px) {
-			#footer {
-				margin-left: -20px;
-				margin-right: -20px;
-				padding-left: 20px;
-				padding-right: 20px;
-			}
+		td
+		{
+			vertical-align:center;
 		}
 	</style>
-	<link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
 </head>
 <body>
-	<div class="wrap">
-		<div class="container">
-			<%= yield %>	
-		</div>
-		<div id="push"></div>
-	</div>
-	<div id="footer">
-		<div class="container">
-			<p class="muted credit">Built on the shoulders of <a href="http://symbiosis.bytemark.co.uk/">Symbiosis</a> from <a href="http://www.bytemark.co.uk/">Bytemark</a></p>
-		</div>
-		<% if session[:user] %>
-			<div class="container">
-				<p class="muted">Signed in as <%= "#{session[:user][0]}@#{session[:user][1]}" %> &mdash; <a href="/logout">Sign out</a></p>
+	<% if session[:user] %>
+		<div class="row hide-for-large">
+			<div class="small-12">
+				<nav class="top-bar">
+					<ul class="title-area">
+						<li class="name">
+							<h1><a href="/">SPanel</a></h1>
+						</li>
+					</ul>
+				</nav>
 			</div>
-		<% end %>
+		</div>
+		<div class="row hide-for-small">
+			<div class="large-12 columns">
+				<nav class="top-bar">
+					<ul class="title-area">
+						<li class="name">
+							<h1><a href="/"><%= session[:user][1] %></a></h1>
+						</li>
+					</ul>
+					<section class="top-bar-section">
+						<ul class="right">
+							<li><a href="/logout">Log out</a></li>
+						</ul>
+					</section>
+				</nav>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 columns">
+				<div class="row">
+					<%= yield %>
+				</div>
+			</div>
+		</div>
+	<% else %>
+		<%= yield %>
+	<% end %>
 	</div>
+	<footer class="row">
+		<div class="large-12 columns">
+			<hr>
+			<div class="row">
+				<div class="large-6 columns">
+					<p>Built on the shoulders of Symbiosis, from Bytemark</p>
+				</div>
+				<div class="large-6 columns">
+					<ul class="inline-list right">
+						<li><a href="http://www.bytemark.co.uk">Bytemark</a></li>
+						<li><a href="http://symbiosis.bytemark.co.uk">Symbiosis</a></li>
+						<li><a href="http://bigv.io">BigV</a></li>
+						<li><a href="http://github.com/kgfullerton/symbiosis-spanel">Source</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</footer>
 </body>
 </html>

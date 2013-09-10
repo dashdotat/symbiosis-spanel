@@ -1,29 +1,39 @@
-<h2><%= @domain.name %></h2>
-<h3>Domain Aliases</h3>
-<ul>
-<% @domain.aliases.each do |a| %>
-	<li><%= a %></li>
-<% end %>
-</ul>
-<h3>Mailboxes</h3>
-<table class="table table-hover">
-<thead>
-	<tr>
-		<td></td>
-		<td></td>
-	</tr>
-</thead>
-<tbody>
-<% @domain.mailboxes.each do |m| %>
-		<tr>
-			<td><a href="/domains/<%= @domain.name %>/mailboxes/<%= m.local_part %>"><%= m.local_part %></a></td>
-			<td><a href="/domains/<%= @domain.name %>/mailboxes/<%= m.local_part %>/reset_password">Reset password</a></td>
-		</tr>
-<% end %>
-</tbody>
-</table>
-<a href="/domains/<%= @domain.name %>/mailboxes/create">Create mailbox</a>
-<br/>
+<div class="large-12 columns">
+	<div class="panel radius">
+		<div class="row">
+			<div class="large-6 small-12 columns">
+				<h4>Domain Aliases</h4><hr/>
+				<% @domain.aliases.each do |a| %>
+					<h5 class="subheader"><%= a %><%= "*" if Symbiosis::Domain.new(a).is_alias? %></h5>
+				<% end %>
+			</div>
+			<div class="large-6 hide-for-small columns">
+				<p>This section lists hostnames which will serve the same content when visited as if you visited <%= @domain.name %></p>
+				<p>Additionally, aliases with a * following them will share mailboxes with <%= @domain.name %> so e-mail sent to <strong>name</strong>@alias will appear in the mailbox of <strong>name</strong>@<%= @domain.name %> (assuming <strong>name</strong> is a valid mailbox or alias defined below)</p>
+			</div>
+			<div class="hide-for-large small-12 columns">
+				<p><small>Aliases marked with a * will also deliver mail to the mailbox/alias with the same name at <%= @domain.name %></small></p>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="large-12 columns">
+	<div class="panel radius">
+		<div class="row">
+			<div class="large-12 small-12 columns">
+				<h4>Mailboxes</h4><hr/>
+				<% @domain.mailboxes.each do |m| %>
+					<h5 class="subheader"><a href="/domains/<%= @domain.name %>/mailboxes/<%= m.local_part %>"><%= m.local_part %></a></h5>
+				<% end %>
+				<a class="button" href="/domains/<%= @domain.name %>/mailboxes/create">Create mailbox</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-6 hide-for-small columns">
+			</div>
+	</div>
+</div>
+<div class="large-8 columns">
 <h3>E-Mail Aliases</h3>
 <table class="table table-hover">
 <thead>
@@ -47,3 +57,4 @@
 	<input type="submit" name="submit" value="Update">
 	</form>
 <% end %>
+</div>
