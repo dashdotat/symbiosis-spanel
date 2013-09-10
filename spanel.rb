@@ -28,8 +28,11 @@ module Symbiosis
 			end
 
 			get '/' do
-				@domains = Symbiosis::Domain.new(session[:user][1]).to_a
-				erb :index
+				if session[:user]
+					redirect "/domains/#{session[:user][1]}"
+				else
+					redirect '/login'
+				end
 			end
 
 			get '/login' do
@@ -37,7 +40,6 @@ module Symbiosis
 			end
 
 			post '/login' do
-				puts request.inspect
 				username = params[:username]
 				password = params[:password]
 				session[:logged_in] = nil
