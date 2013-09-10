@@ -56,7 +56,7 @@ module Symbiosis
 
 			get '/logout' do
 				session[:logged_in] = nil
-				session[:username] = nil
+				session[:user] = nil
 				redirect '/login'
 			end
 
