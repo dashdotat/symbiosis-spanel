@@ -16,7 +16,7 @@ module Symbiosis
 		end
 
 		def mailbox_aliases
-			aliases = get_param("aliases", self.directory + '/config')
+			aliases = get_param("aliases", self.config_dir)
 			aliases_return = {}
 			if aliases
 				aliases = aliases.split("\n")
