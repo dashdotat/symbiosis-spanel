@@ -36,7 +36,7 @@ module Symbiosis
 			end
 
 			get '/login' do
-				erb :login
+				erb 'auth/login'.to_sym
 			end
 
 			post '/login' do
@@ -50,7 +50,7 @@ module Symbiosis
 					session[:user] = auth
 					redirect "/domains/#{session[:user][1]}"
 				else
-					erb :login
+					erb 'auth/login'.to_sym
 				end
 			end
 
@@ -70,7 +70,7 @@ module Symbiosis
 
 			get '/domains/:domain' do
 				@domain = check_domain_access(params[:domain])
-				erb :domain_main
+				erb 'domain/index'.to_sym
 			end
 
 			post '/domains/:domain' do
@@ -82,7 +82,7 @@ module Symbiosis
 
 			get '/domains/:domain/mailboxes/create' do
 				@domain = check_domain_access(params[:domain])
-				erb :mailbox_create
+				erb 'mailbox/create'.to_sym
 			end
 
 			post '/domains/:domain/mailboxes/create' do
@@ -107,7 +107,7 @@ module Symbiosis
 				@domain = check_domain_access(params[:domain])
 				@mailbox = @domain.find_mailbox(params[:local_part])
 				redirect '/' unless @mailbox.exists?
-				erb :mailbox_reset
+				erb 'mailbox/reset'.to_sym
 			end
 
 			post '/domains/:domain/mailboxes/:local_part/reset_password' do
@@ -115,7 +115,7 @@ module Symbiosis
 				@mailbox = @domain.find_mailbox(params[:local_part])
 				redirect '/' unless @mailbox.exists?
 				if params[:password] != params[:password_confirm]
-					erb :mailbox_reset
+					erb 'mailbox/reset'.to_sym
 				else
 					@mailbox.password = params[:password]
 					redirect "/domains/#{@domain.name}"	
