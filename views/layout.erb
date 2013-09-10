@@ -54,6 +54,11 @@
 		<div class="container">
 			<p class="muted credit">Built on the shoulders of <a href="http://symbiosis.bytemark.co.uk/">Symbiosis</a> from <a href="http://www.bytemark.co.uk/">Bytemark</a></p>
 		</div>
+		<% if session[:user] %>
+			<div class="container">
+				<p class="muted">Signed in as <%= "#{session[:user][0]}@#{session[:user][1]}" %> &mdash; <a href="/logout">Sign out</a></p>
+			</div>
+		<% end %>
 	</div>
 </body>
 </html>
