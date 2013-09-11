@@ -97,17 +97,13 @@ module Symbiosis
 
 			get '/domains/:domain/mailboxes/:local_part' do
 				@domain = check_domain_access(params[:domain])
+				@mailbox = @domain.find_mailbox(params[:local_part])
+				redirect '/' unless @mailbox.exists?
+				erb 'mailbox/index'.to_sym
 			end
 
 			post '/domains/:domain/mailboxes/:local_part' do
 				@domain = check_domain_access(params[:domain])
-			end
-
-			get '/domains/:domain/mailboxes/:local_part/reset_password' do
-				@domain = check_domain_access(params[:domain])
-				@mailbox = @domain.find_mailbox(params[:local_part])
-				redirect '/' unless @mailbox.exists?
-				erb 'mailbox/reset'.to_sym
 			end
 
 			post '/domains/:domain/mailboxes/:local_part/reset_password' do
@@ -115,7 +111,7 @@ module Symbiosis
 				@mailbox = @domain.find_mailbox(params[:local_part])
 				redirect '/' unless @mailbox.exists?
 				if params[:password] != params[:password_confirm]
-					erb 'mailbox/reset'.to_sym
+					erb 'mailbox/index'.to_sym
 				else
 					@mailbox.password = params[:password]
 					redirect "/domains/#{@domain.name}"	

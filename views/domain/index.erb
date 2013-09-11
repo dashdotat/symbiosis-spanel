@@ -43,7 +43,7 @@
 	</tr>
 </thead>
 <tbody>
-	<% @domain.mailbox_aliases.each do |k,v| %>
+	<% @domain.mailbox_aliases.sort.each do |k,v| %>
 		<tr>
 			<td><%= k %></td>
 			<td><%= v.join(", ") %></td>
